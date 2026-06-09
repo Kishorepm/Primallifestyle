@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRIMAL — Built On Your Body</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav" id="nav">
+    <div class="nav__logo">PRIMAL</div>
+    <div class="nav__chapters">
+      <button class="nav__dot active" data-chapter="0" title="Title"></button>
+      <button class="nav__dot" data-chapter="1" title="Prepare"></button>
+      <button class="nav__dot" data-chapter="2" title="Drop"></button>
+      <button class="nav__dot" data-chapter="3" title="Equip"></button>
+      <button class="nav__dot" data-chapter="4" title="Deploy"></button>
+    </div>
+    <div class="nav__status">
+      <span class="status-dot"></span>
+      <span class="nav__status-text">DROP.01 LIVE</span>
+    </div>
+  </nav>
+
+  <!-- CHAPTER WRAPPER -->
+  <main class="chapters" id="chapters">
+
+    <!-- ═══════════════════════════════════════════════
+         CHAPTER 01 — TITLE
+    ═══════════════════════════════════════════════ -->
+    <section class="chapter chapter--01 active" id="ch01">
+      <div class="ch01__bg-grid"></div>
+
+      <!-- HUD corner labels -->
+      <div class="hud-corner hud-corner--tl">
+        <span>SYS / PRIMAL.OS</span>
+        <span>VER 01.0.0</span>
+      </div>
+      <div class="hud-corner hud-corner--tr">
+        <span>DROP.01</span>
+        <span class="pulse-text">ACTIVE</span>
+      </div>
+      <div class="hud-corner hud-corner--bl">
+        <span>SEASON / 001</span>
+        <span>UNITS / 47</span>
+      </div>
+      <div class="hud-corner hud-corner--br">
+        <span id="live-time">00:00:00</span>
+        <span>UTC+0</span>
+      </div>
+
+      <!-- Floating product silhouette -->
+      <div class="ch01__model-wrap">
+        <div class="ch01__model float-anim">
+          <div class="model-silhouette">
+            <div class="model-head"></div>
+            <div class="model-torso">
+              <div class="model-jacket"></div>
+              <div class="model-jacket-detail"></div>
+            </div>
+            <div class="model-pants"></div>
+            <div class="model-shoes"></div>
+          </div>
+          <div class="model-glow"></div>
+        </div>
+        <div class="ch01__shadow"></div>
+        <div class="ch01__badge">
+          <span>1 OF 1</span>
+          <span>IN YOUR CODE</span>
+        </div>
+      </div>
+
+      <!-- Hero text -->
+      <div class="ch01__text">
+        <p class="ch01__eyebrow">HYPER-PERSONALIZED FASHION DROP ENGINE</p>
+        <h1 class="ch01__wordmark glitch-text" data-text="PRIMAL">PRIMAL</h1>
+        <p class="ch01__tagline">BUILT ON YOUR BODY</p>
+        <p class="ch01__sub">Algorithm-curated streetwear loadouts. Geo-locked. One-of-one. Yours.</p>
+        <button class="btn-primary" id="beginBtn">
+          <span class="btn-primary__inner">BEGIN</span>
+          <span class="btn-primary__arrow">→</span>
+        </button>
+      </div>
+
+      <!-- Drop ticket / barcode -->
+      <div class="ch01__ticket float-anim-slow">
+        <div class="ticket__top">
+          <span class="ticket__label">DROP CODE</span>
+          <span class="ticket__code" id="dropCode">PRM-——-——-——</span>
+        </div>
+        <div class="ticket__barcode">
+          <div class="barcode-lines"></div>
+        </div>
+        <div class="ticket__bottom">
+          <span>GEO-LOCKED</span>
+          <span class="ticket__status">STANDBY</span>
+        </div>
+      </div>
+
+      <!-- Scroll hint -->
+      <div class="scroll-hint">
+        <span>SCROLL</span>
+        <div class="scroll-hint__line"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         CHAPTER 02 — DOCTRINE / PREPARE
+    ═══════════════════════════════════════════════ -->
+    <section class="chapter chapter--02" id="ch02">
+      <div class="ch02__bg-scan"></div>
+
+      <div class="ch02__header">
+        <div class="chapter-label">CHAPTER 02</div>
+        <h2 class="chapter-title">DOCTRINE<span class="title-slash">/</span>PREPARE</h2>
+        <p class="chapter-desc">Feed the algorithm. It reads you, builds you.</p>
+      </div>
+
+      <div class="ch02__engine">
+
+        <!-- Upload zone -->
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-zone__inner">
+            <div class="upload-icon">
+              <div class="upload-icon__circle"></div>
+              <div class="upload-icon__cross"></div>
+            </div>
+            <p class="upload-zone__label">UPLOAD REFERENCE PHOTO</p>
+            <p class="upload-zone__sub">JPEG / PNG · MAX 8MB</p>
+            <input type="file" id="photoInput" accept="image/*" hidden />
+          </div>
+          <div class="upload-zone__preview" id="uploadPreview" hidden>
+            <img id="previewImg" alt="Your photo" />
+            <button class="upload-clear" id="uploadClear">✕</button>
+          </div>
+        </div>
+
+        <!-- Input grid -->
+        <div class="input-grid">
+
+          <div class="input-field">
+            <label class="input-label">SKIN TONE</label>
+            <div class="tone-picker" id="tonePicker">
+              <button class="tone-swatch" data-tone="I" style="--c:#F5D5B0" title="Type I"></button>
+              <button class="tone-swatch" data-tone="II" style="--c:#D4A574" title="Type II"></button>
+              <button class="tone-swatch" data-tone="III" style="--c:#B8834A" title="Type III"></button>
+              <button class="tone-swatch" data-tone="IV" style="--c:#8B5E3C" title="Type IV"></button>
+              <button class="tone-swatch" data-tone="V" style="--c:#5C3420" title="Type V"></button>
+              <button class="tone-swatch" data-tone="VI" style="--c:#2D1B0E" title="Type VI"></button>
+            </div>
+          </div>
+
+          <div class="input-field">
+            <label class="input-label" for="heightInput">HEIGHT</label>
+            <div class="input-row">
+              <input class="text-input" id="heightInput" type="number" placeholder="175" min="140" max="220" />
+              <span class="input-unit">CM</span>
+            </div>
+          </div>
+
+          <div class="input-field">
+            <label class="input-label" for="weightInput">WEIGHT</label>
+            <div class="input-row">
+              <input class="text-input" id="weightInput" type="number" placeholder="70" min="40" max="160" />
+              <span class="input-unit">KG</span>
+            </div>
+          </div>
+
+          <div class="input-field">
+            <label class="input-label">GENDER STYLE</label>
+            <div class="toggle-group" id="genderGroup">
+              <button class="toggle-btn active" data-val="male">MALE</button>
+              <button class="toggle-btn" data-val="female">FEMALE</button>
+              <button class="toggle-btn" data-val="neutral">NEUTRAL</button>
+            </div>
+          </div>
+
+          <div class="input-field">
+            <label class="input-label">FIT PREFERENCE</label>
+            <div class="toggle-group" id="fitGroup">
+              <button class="toggle-btn active" data-val="slim">SLIM</button>
+              <button class="toggle-btn" data-val="regular">REGULAR</button>
+              <button class="toggle-btn" data-val="oversized">OVERSIZED</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Archetype selector -->
+        <div class="archetype-section">
+          <label class="input-label">SELECT ARCHETYPE</label>
+          <div class="archetype-grid" id="archetypeGrid">
+            <button class="archetype-card" data-archetype="URBAN">
+              <div class="archetype-card__icon">⬡</div>
+              <div class="archetype-card__name">URBAN</div>
+              <div class="archetype-card__desc">City-engineered. Utility meets edge.</div>
+            </button>
+            <button class="archetype-card active" data-archetype="SHADOW">
+              <div class="archetype-card__icon">◈</div>
+              <div class="archetype-card__name">SHADOW</div>
+              <div class="archetype-card__desc">Minimal. Stealth. Technical fabric.</div>
+            </button>
+            <button class="archetype-card" data-archetype="FIELD">
+              <div class="archetype-card__icon">⬟</div>
+              <div class="archetype-card__name">FIELD</div>
+              <div class="archetype-card__desc">Tactical outerwear. Weather-ready.</div>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-primary btn-generate" id="generateBtn">
+          <span class="btn-primary__inner">GENERATE BUILD</span>
+          <div class="btn-loader hidden" id="btnLoader">
+            <span></span><span></span><span></span>
+          </div>
+        </button>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         CHAPTER 03 — DROP.01
+    ═══════════════════════════════════════════════ -->
+    <section class="chapter chapter--03" id="ch03">
+
+      <div class="ch03__header">
+        <div class="chapter-label">CHAPTER 03</div>
+        <h2 class="chapter-title">DROP<span class="title-dot">.</span>01</h2>
+        <p class="chapter-desc">Your algorithm-generated look. Drag to explore.</p>
+      </div>
+
+      <!-- Depth Carousel -->
+      <div class="depth-carousel" id="depthCarousel">
+        <button class="carousel-arrow carousel-arrow--prev" id="carouselPrev">‹</button>
+        <div class="carousel-track" id="carouselTrack">
+
+          <div class="carousel-slide" data-index="0">
+            <div class="slide-card">
+              <div class="slide-card__fig">
+                <div class="outfit-silhouette outfit--shadow">
+                  <div class="os-head"></div>
+                  <div class="os-upper">
+                    <div class="os-jacket os-jacket--shadow"></div>
+                  </div>
+                  <div class="os-lower os-lower--shadow"></div>
+                  <div class="os-feet"></div>
+                </div>
+              </div>
+              <div class="slide-card__meta">
+                <span class="slide-tag">SHADOW / BUILD 01</span>
+                <p class="slide-name">ACRONYM J1A-GT<br>+ STONE ISLAND</p>
+                <p class="slide-price">$1,240</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="carousel-slide" data-index="1">
+            <div class="slide-card">
+              <div class="slide-card__fig">
+                <div class="outfit-silhouette outfit--urban">
+                  <div class="os-head os-head--cap"></div>
+                  <div class="os-upper">
+                    <div class="os-jacket os-jacket--urban"></div>
+                  </div>
+                  <div class="os-lower os-lower--urban"></div>
+                  <div class="os-feet os-feet--boot"></div>
+                </div>
+              </div>
+              <div class="slide-card__meta">
+                <span class="slide-tag">URBAN / BUILD 02</span>
+                <p class="slide-name">Y-3 FIELD JACKET<br>+ SALEHE</p>
+                <p class="slide-price">$980</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="carousel-slide" data-index="2">
+            <div class="slide-card">
+              <div class="slide-card__fig">
+                <div class="outfit-silhouette outfit--field">
+                  <div class="os-head"></div>
+                  <div class="os-upper">
+                    <div class="os-jacket os-jacket--field"></div>
+                  </div>
+                  <div class="os-lower os-lower--field"></div>
+                  <div class="os-feet os-feet--cargo"></div>
+                </div>
+              </div>
+              <div class="slide-card__meta">
+                <span class="slide-tag">FIELD / BUILD 03</span>
+                <p class="slide-name">C.P. COMPANY<br>+ NEMEN</p>
+                <p class="slide-price">$1,560</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="carousel-slide" data-index="3">
+            <div class="slide-card">
+              <div class="slide-card__fig">
+                <div class="outfit-silhouette outfit--shadow">
+                  <div class="os-head os-head--hood"></div>
+                  <div class="os-upper">
+                    <div class="os-jacket os-jacket--minimal"></div>
+                  </div>
+                  <div class="os-lower os-lower--tapered"></div>
+                  <div class="os-feet"></div>
+                </div>
+              </div>
+              <div class="slide-card__meta">
+                <span class="slide-tag">SHADOW / BUILD 04</span>
+                <p class="slide-name">VEILANCE<br>+ TILAK</p>
+                <p class="slide-price">$1,840</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="carousel-slide" data-index="4">
+            <div class="slide-card">
+              <div class="slide-card__fig">
+                <div class="outfit-silhouette outfit--urban">
+                  <div class="os-head"></div>
+                  <div class="os-upper">
+                    <div class="os-jacket os-jacket--bomber"></div>
+                  </div>
+                  <div class="os-lower os-lower--wide"></div>
+                  <div class="os-feet os-feet--runner"></div>
+                </div>
+              </div>
+              <div class="slide-card__meta">
+                <span class="slide-tag">URBAN / BUILD 05</span>
+                <p class="slide-name">HYEIN SEO<br>+ NB 990V6</p>
+                <p class="slide-price">$720</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <button class="carousel-arrow carousel-arrow--next" id="carouselNext">›</button>
+        <div class="carousel-indicators" id="carouselIndicators"></div>
+      </div>
+
+      <!-- Catalog grid -->
+      <div class="catalog-section">
+        <p class="catalog-label">INDIVIDUAL PIECES — YOUR BUILD</p>
+        <div class="catalog-grid" id="catalogGrid">
+
+          <div class="catalog-card">
+            <div class="catalog-card__frame">
+              <div class="catalog-piece jacket-piece"></div>
+            </div>
+            <div class="catalog-card__info">
+              <span class="catalog-brand">ACRONYM</span>
+              <span class="catalog-name">J1A-GT JACKET</span>
+              <span class="catalog-price">$580</span>
+            </div>
+            <div class="catalog-card__tag">LAYER 1</div>
+          </div>
+
+          <div class="catalog-card">
+            <div class="catalog-card__frame">
+              <div class="catalog-piece pants-piece"></div>
+            </div>
+            <div class="catalog-card__info">
+              <span class="catalog-brand">STONE ISLAND</span>
+              <span class="catalog-name">NYLON CARGO</span>
+              <span class="catalog-price">$320</span>
+            </div>
+            <div class="catalog-card__tag">LAYER 2</div>
+          </div>
+
+          <div class="catalog-card">
+            <div class="catalog-card__frame">
+              <div class="catalog-piece shoe-piece"></div>
+            </div>
+            <div class="catalog-card__info">
+              <span class="catalog-brand">SALEHE BEMBURY</span>
+              <span class="catalog-name">2002R COLLAB</span>
+              <span class="catalog-price">$240</span>
+            </div>
+            <div class="catalog-card__tag">FOOTWEAR</div>
+          </div>
+
+          <div class="catalog-card">
+            <div class="catalog-card__frame">
+              <div class="catalog-piece bag-piece"></div>
+            </div>
+            <div class="catalog-card__info">
+              <span class="catalog-brand">PORTER</span>
+              <span class="catalog-name">TANKER POUCH</span>
+              <span class="catalog-price">$100</span>
+            </div>
+            <div class="catalog-card__tag">ACCESSORY</div>
+          </div>
+
+          <div class="catalog-card">
+            <div class="catalog-card__frame">
+              <div class="catalog-piece cap-piece"></div>
+            </div>
+            <div class="catalog-card__info">
+              <span class="catalog-brand">DISTRICT VISION</span>
+              <span class="catalog-name">KOYAMA CAP</span>
+              <span class="catalog-price">$80</span>
+            </div>
+            <div class="catalog-card__tag">HEADWEAR</div>
+          </div>
+
+          <div class="catalog-card">
+            <div class="catalog-card__frame">
+              <div class="catalog-piece layer-piece"></div>
+            </div>
+            <div class="catalog-card__info">
+              <span class="catalog-brand">VEILANCE</span>
+              <span class="catalog-name">FIELD MID-LAYER</span>
+              <span class="catalog-price">$280</span>
+            </div>
+            <div class="catalog-card__tag">LAYER 0</div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         CHAPTER 04 — EQUIP
+    ═══════════════════════════════════════════════ -->
+    <section class="chapter chapter--04" id="ch04">
+      <div class="ch04__bg-blueprint"></div>
+
+      <div class="ch04__header">
+        <div class="chapter-label">CHAPTER 04</div>
+        <h2 class="chapter-title">EQUIP</h2>
+        <p class="chapter-desc">Lock your loadout. Swap pieces from curated alternatives.</p>
+      </div>
+
+      <div class="hud-configurator">
+
+        <!-- Central flat-lay -->
+        <div class="flatlay-container">
+          <div class="flatlay-label">ACTIVE LOADOUT</div>
+          <div class="flatlay" id="flatlay">
+            <div class="flatlay-piece flatlay-jacket float-anim">
+              <div class="fl-jacket-render"></div>
+              <span class="fl-label">JACKET</span>
+            </div>
+            <div class="flatlay-piece flatlay-pants float-anim-reverse">
+              <div class="fl-pants-render"></div>
+              <span class="fl-label">PANTS</span>
+            </div>
+            <div class="flatlay-piece flatlay-shoes float-anim-slow">
+              <div class="fl-shoes-render"></div>
+              <span class="fl-label">SHOES</span>
+            </div>
+            <div class="flatlay-piece flatlay-bag float-anim">
+              <div class="fl-bag-render"></div>
+              <span class="fl-label">BAG</span>
+            </div>
+            <div class="flatlay-piece flatlay-cap float-anim-slow">
+              <div class="fl-cap-render"></div>
+              <span class="fl-label">CAP</span>
+            </div>
+          </div>
+          <div class="flatlay-total">
+            <span class="total-label">BUILD TOTAL</span>
+            <span class="total-price" id="totalPrice">$1,240</span>
+          </div>
+        </div>
+
+        <!-- Slot panels -->
+        <div class="slot-panels">
+
+          <div class="slot-panel" data-slot="jacket">
+            <div class="slot-panel__header">
+              <span class="slot-panel__label">OUTERWEAR</span>
+              <span class="slot-panel__lock" id="lockJacket">⬜ SWAP</span>
+            </div>
+            <div class="slot-panel__current">
+              <span class="slot-current-name">ACRONYM J1A-GT</span>
+              <span class="slot-current-price">$580</span>
+            </div>
+            <div class="slot-panel__alts">
+              <button class="alt-btn active" data-price="580">ACRONYM J1A-GT · $580</button>
+              <button class="alt-btn" data-price="420">CP COMPANY GOGGLE · $420</button>
+              <button class="alt-btn" data-price="650">VEILANCE MIONN · $650</button>
+            </div>
+          </div>
+
+          <div class="slot-panel" data-slot="pants">
+            <div class="slot-panel__header">
+              <span class="slot-panel__label">BOTTOM</span>
+              <span class="slot-panel__lock" id="lockPants">⬜ SWAP</span>
+            </div>
+            <div class="slot-panel__current">
+              <span class="slot-current-name">STONE ISLAND NYLON CARGO</span>
+              <span class="slot-current-price">$320</span>
+            </div>
+            <div class="slot-panel__alts">
+              <button class="alt-btn active" data-price="320">STONE ISLAND CARGO · $320</button>
+              <button class="alt-btn" data-price="280">NEMEN HYBRID PANTS · $280</button>
+              <button class="alt-btn" data-price="360">ISAORA ALPINE · $360</button>
+            </div>
+          </div>
+
+          <div class="slot-panel" data-slot="shoes">
+            <div class="slot-panel__header">
+              <span class="slot-panel__label">FOOTWEAR</span>
+              <span class="slot-panel__lock" id="lockShoes">⬜ SWAP</span>
+            </div>
+            <div class="slot-panel__current">
+              <span class="slot-current-name">SALEHE 2002R</span>
+              <span class="slot-current-price">$240</span>
+            </div>
+            <div class="slot-panel__alts">
+              <button class="alt-btn active" data-price="240">SALEHE 2002R · $240</button>
+              <button class="alt-btn" data-price="190">NB 990V6 · $190</button>
+              <button class="alt-btn" data-price="310">NORDA 001 · $310</button>
+            </div>
+          </div>
+
+          <div class="slot-panel" data-slot="bag">
+            <div class="slot-panel__header">
+              <span class="slot-panel__label">CARRY</span>
+              <span class="slot-panel__lock" id="lockBag">⬜ SWAP</span>
+            </div>
+            <div class="slot-panel__current">
+              <span class="slot-current-name">PORTER TANKER POUCH</span>
+              <span class="slot-current-price">$100</span>
+            </div>
+            <div class="slot-panel__alts">
+              <button class="alt-btn active" data-price="100">PORTER TANKER · $100</button>
+              <button class="alt-btn" data-price="85">COTE&CIEL ISAR · $85</button>
+              <button class="alt-btn" data-price="140">OUTLIER PACK · $140</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="ch04__actions">
+        <button class="btn-secondary" id="resetBuild">RESET BUILD</button>
+        <button class="btn-primary" id="lockBuildBtn">
+          <span class="btn-primary__inner">LOCK BUILD</span>
+          <span class="btn-primary__arrow">→</span>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         CHAPTER 05 — DEPLOY
+    ═══════════════════════════════════════════════ -->
+    <section class="chapter chapter--05" id="ch05">
+
+      <div class="ch05__header">
+        <div class="chapter-label">CHAPTER 05</div>
+        <h2 class="chapter-title">DEPLOY</h2>
+        <p class="chapter-desc">Your build is confirmed. Ship it.</p>
+      </div>
+
+      <div class="deploy-grid">
+
+        <!-- Order summary -->
+        <div class="order-summary">
+          <div class="order-summary__title">BUILD SUMMARY</div>
+          <div class="order-lines" id="orderLines">
+            <div class="order-line">
+              <span class="order-line__name">ACRONYM J1A-GT</span>
+              <span class="order-line__price">$580</span>
+            </div>
+            <div class="order-line">
+              <span class="order-line__name">STONE ISLAND NYLON CARGO</span>
+              <span class="order-line__price">$320</span>
+            </div>
+            <div class="order-line">
+              <span class="order-line__name">SALEHE BEMBURY 2002R</span>
+              <span class="order-line__price">$240</span>
+            </div>
+            <div class="order-line">
+              <span class="order-line__name">PORTER TANKER POUCH</span>
+              <span class="order-line__price">$100</span>
+            </div>
+            <div class="order-line">
+              <span class="order-line__name">DISTRICT VISION KOYAMA</span>
+              <span class="order-line__price">$80</span>
+            </div>
+            <div class="order-line">
+              <span class="order-line__name">VEILANCE FIELD MID-LAYER</span>
+              <span class="order-line__price">$280</span>
+            </div>
+            <div class="order-divider"></div>
+            <div class="order-line order-total-line">
+              <span class="order-line__name">BUILD TOTAL</span>
+              <span class="order-line__price">$1,600</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drop state -->
+        <div class="drop-state">
+          <div class="drop-state__title">DROP STATUS</div>
+          <div class="drop-state__modules">
+
+            <div class="drop-module drop-module--live">
+              <div class="drop-module__icon">◉</div>
+              <div class="drop-module__text">
+                <span class="drop-module__label">STATUS</span>
+                <span class="drop-module__val">DROP OPEN</span>
+              </div>
+            </div>
+
+            <div class="drop-module">
+              <div class="drop-module__icon">◈</div>
+              <div class="drop-module__text">
+                <span class="drop-module__label">EDITION</span>
+                <span class="drop-module__val">1 OF 1</span>
+              </div>
+            </div>
+
+            <div class="drop-module drop-module--geo">
+              <div class="drop-module__icon">⊕</div>
+              <div class="drop-module__text">
+                <span class="drop-module__label">GEO-LOCK</span>
+                <span class="drop-module__val" id="geoStatus">DETECTING...</span>
+              </div>
+            </div>
+
+            <div class="drop-module">
+              <div class="drop-module__icon">⧖</div>
+              <div class="drop-module__text">
+                <span class="drop-module__label">DROP WINDOW</span>
+                <span class="drop-module__val countdown" id="dropCountdown">23:47:12</span>
+              </div>
+            </div>
+
+          </div>
+
+          <button class="btn-deploy" id="deployBtn">
+            <span>CONFIRM &amp; DEPLOY</span>
+          </button>
+        </div>
+
+        <!-- Social content pack -->
+        <div class="social-pack">
+          <div class="social-pack__title">CONTENT PACK</div>
+          <p class="social-pack__desc">Generate a shareable card showcasing your personalized build.</p>
+          <div class="social-pack__preview" id="socialCard">
+            <div class="sc-bg">
+              <div class="sc-label">PRIMAL</div>
+              <div class="sc-build-name">SHADOW BUILD 01</div>
+              <div class="sc-fig">
+                <div class="sc-silhouette">
+                  <div class="sc-s-head"></div>
+                  <div class="sc-s-body"></div>
+                  <div class="sc-s-legs"></div>
+                </div>
+              </div>
+              <div class="sc-pieces">
+                <span>ACRONYM</span>
+                <span>STONE ISLAND</span>
+                <span>SALEHE</span>
+              </div>
+              <div class="sc-price">$1,240</div>
+              <div class="sc-code" id="socialCode">PRM-——-——-——</div>
+            </div>
+          </div>
+          <div class="social-pack__actions">
+            <button class="btn-secondary" id="downloadCard">DOWNLOAD CARD</button>
+            <button class="btn-secondary" id="shareCard">SHARE BUILD</button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- CHAPTER NAVIGATION ARROWS -->
+  <div class="chapter-nav">
+    <button class="chapter-nav__btn chapter-nav__btn--prev" id="prevChapter" aria-label="Previous chapter">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
+    <button class="chapter-nav__btn chapter-nav__btn--next" id="nextChapter" aria-label="Next chapter">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- DEPLOY SUCCESS OVERLAY -->
+  <div class="deploy-overlay hidden" id="deployOverlay">
+    <div class="deploy-overlay__inner">
+      <div class="deploy-overlay__icon">◉</div>
+      <h2 class="deploy-overlay__title">BUILD DEPLOYED</h2>
+      <p class="deploy-overlay__code" id="confirmedCode">PRM-——-——-——</p>
+      <p class="deploy-overlay__sub">Your order is confirmed. Expect dispatch within 48h.</p>
+      <button class="btn-primary" id="closeOverlay">
+        <span class="btn-primary__inner">RETURN TO PRIMAL</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

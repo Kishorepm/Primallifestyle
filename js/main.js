@@ -1,518 +1,316 @@
-/* ─────────────────────────────────────────────────────────────
-   PRIMAL LIFESTYLE — MAIN SCRIPT
-───────────────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   PRIMAL — Panel-switch HUD controller
+═══════════════════════════════════════════════════════════ */
 
-'use strict';
+"use strict";
 
-/* ── STATE ─────────────────────────────────────── */
+/* ── STATE ── */
 const state = {
-  currentChapter: 0,
-  totalChapters: 5,
-  carouselIndex: 2,
-  buildData: {
-    photo: null,
-    skinTone: null,
-    height: null,
-    weight: null,
-    gender: 'male',
-    fit: 'slim',
-    archetype: 'SHADOW',
-  },
-  prices: {
-    jacket: 580,
-    pants: 320,
-    shoes: 240,
-    bag: 100,
-  },
+  panel: 0,
+  total: 5,
+  transitioning: false,
   dropCode: null,
-  isTransitioning: false,
+  build: {
+    photo: null, skinTone: null, height: null, weight: null,
+    gender: "male", fit: "slim", archetype: "SHADOW",
+  },
+  selected: 0,
+  prices: { jacket: 580, pants: 320, shoes: 240, bag: 100 },
 };
 
-/* ── HELPERS ───────────────────────────────────── */
-function generateDropCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const seg = () => Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-  return `PRM-${seg()}-${seg()}-${seg()}`;
+/* ── BUILD CATALOG (Ch03 character-select) ── */
+const BUILDS = [
+  { tag: "SHADOW / BUILD 01", name: "ACRONYM LOADOUT", price: 1240,
+    pieces: [["OUTER","ACRONYM J1A-GT"],["BOTTOM","STONE ISLAND"],["FEET","SALEHE 2002R"],["CARRY","PORTER TANKER"]] },
+  { tag: "URBAN / BUILD 02", name: "Y-3 FIELD", price: 980,
+    pieces: [["OUTER","Y-3 FIELD JKT"],["BOTTOM","NEMEN HYBRID"],["FEET","NB 990V6"],["CARRY","COTE&CIEL"]] },
+  { tag: "FIELD / BUILD 03", name: "C.P. COMPANY", price: 1560,
+    pieces: [["OUTER","CP GOGGLE JKT"],["BOTTOM","ISAORA ALPINE"],["FEET","NORDA 001"],["CARRY","OUTLIER PACK"]] },
+  { tag: "SHADOW / BUILD 04", name: "VEILANCE", price: 1840,
+    pieces: [["OUTER","VEILANCE MIONN"],["BOTTOM","ARC'TERYX"],["FEET","NORDA 001"],["CARRY","TILAK"]] },
+  { tag: "URBAN / BUILD 05", name: "HYEIN SEO", price: 720,
+    pieces: [["OUTER","HYEIN SEO BMBR"],["BOTTOM","STONE ISLAND"],["FEET","NB 990V6"],["CARRY","PORTER"]] },
+];
+
+/* ── HELPERS ── */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+function makeCode() {
+  const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const seg = (n) => Array.from({ length: n }, () => c[Math.floor(Math.random() * c.length)]).join("");
+  return `PRM-${seg(4)}-${seg(4)}-${seg(4)}`;
 }
 
-function formatTime(date) {
-  return date.toISOString().split('T')[1].split('.')[0];
+/* ── PANEL SWITCHING ── */
+function switchPanel(index, _dir) {
+  if (state.transitioning || index < 0 || index >= state.total || index === state.panel) {
+    // allow re-render of derived panels even if same
+    if (index === state.panel) return;
+    return;
+  }
+  state.transitioning = true;
+
+  const panels = $$(".panel");
+  const cur = panels[state.panel];
+  const next = panels[index];
+
+  cur.classList.add("exit");
+  cur.classList.remove("active");
+  requestAnimationFrame(() => requestAnimationFrame(() => next.classList.add("active")));
+
+  setTimeout(() => { cur.classList.remove("exit"); state.transitioning = false; }, 500);
+
+  state.panel = index;
+  syncChrome(index);
+  onEnterPanel(index);
 }
 
-/* ── LIVE CLOCK ────────────────────────────────── */
-function initClock() {
-  const el = document.getElementById('live-time');
-  if (!el) return;
-  const tick = () => { el.textContent = formatTime(new Date()); };
-  tick();
-  setInterval(tick, 1000);
+function syncChrome(index) {
+  $$(".tab").forEach((t, i) => t.classList.toggle("active", i === index));
+  $$(".prog-seg").forEach((p, i) => p.classList.toggle("active", i <= index));
+  const r = $("#r-panel");
+  if (r) r.textContent = `0${index + 1}/05`;
+  $("#navPrev").disabled = index === 0;
+  $("#navNext").disabled = index === state.total - 1;
 }
 
-/* ── DROP CODE ─────────────────────────────────── */
-function initDropCode() {
-  state.dropCode = generateDropCode();
-  const els = document.querySelectorAll('#dropCode, #socialCode, #confirmedCode');
-  els.forEach(el => { if (el) el.textContent = state.dropCode; });
+function onEnterPanel(index) {
+  if (index === 2) renderSelectDetail(state.selected);
+  if (index === 4) renderOrder();
 }
 
-/* ── GEO DETECTION ─────────────────────────────── */
-function initGeo() {
-  const el = document.getElementById('geoStatus');
-  if (!el) return;
+/* ── NAV WIRING ── */
+function initNav() {
+  $$(".tab").forEach((tab, i) =>
+    tab.addEventListener("click", () => switchPanel(i, i > state.panel ? "fwd" : "back")));
+
+  $("#navPrev").addEventListener("click", () => switchPanel(state.panel - 1, "back"));
+  $("#navNext").addEventListener("click", () => switchPanel(state.panel + 1, "fwd"));
+
+  $$("[data-goto]").forEach((el) =>
+    el.addEventListener("click", () => switchPanel(parseInt(el.dataset.goto, 10), "fwd")));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT") return;
+    if (e.key === "ArrowRight") switchPanel(state.panel + 1, "fwd");
+    else if (e.key === "ArrowLeft") switchPanel(state.panel - 1, "back");
+  });
+
+  $("#navPrev").disabled = true;
+}
+
+/* ── CHROME LIVE DATA ── */
+function initChromeData() {
+  state.dropCode = makeCode();
+  const short = state.dropCode.split("-").slice(0, 2).join("-");
+  ["#dropCode", "#socialCode"].forEach((s) => { const e = $(s); if (e) e.textContent = state.dropCode; });
+  const tc = $("#ticketCode"); if (tc) tc.textContent = short;
+
+  const time = $("#r-time");
+  const tick = () => { if (time) time.textContent = new Date().toISOString().slice(11, 19); };
+  tick(); setInterval(tick, 1000);
+
+  // geo
   setTimeout(() => {
+    const g1 = $("#r-geo"), g2 = $("#geoStatus");
+    const set = (txt, red) => { [g1, g2].forEach((e) => { if (e) { e.textContent = txt; if (red) e.classList.add("red"); } }); };
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        () => { el.textContent = 'UNLOCKED'; el.style.color = 'var(--hud)'; },
-        () => { el.textContent = 'REGION: GLOBAL'; el.style.color = 'var(--ink-2)'; }
-      );
-    } else {
-      el.textContent = 'REGION: GLOBAL';
-    }
-  }, 1800);
+      navigator.geolocation.getCurrentPosition(() => set("UNLOCKED", true), () => set("GLOBAL", false));
+    } else set("GLOBAL", false);
+  }, 1600);
+
+  // countdown
+  const cd = $("#dropCountdown");
+  let s = 23 * 3600 + 47 * 60 + 12;
+  setInterval(() => {
+    s = Math.max(0, s - 1);
+    if (cd) cd.textContent = [s / 3600, (s % 3600) / 60, s % 60].map((n) => String(Math.floor(n)).padStart(2, "0")).join(":");
+  }, 1000);
 }
 
-/* ── COUNTDOWN TIMER ───────────────────────────── */
-function initCountdown() {
-  const el = document.getElementById('dropCountdown');
-  if (!el) return;
-  let secs = 23 * 3600 + 47 * 60 + 12;
-  const tick = () => {
-    secs = Math.max(0, secs - 1);
-    const h = String(Math.floor(secs / 3600)).padStart(2, '0');
-    const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
-    const s = String(secs % 60).padStart(2, '0');
-    el.textContent = `${h}:${m}:${s}`;
-  };
-  setInterval(tick, 1000);
-}
-
-/* ── CHAPTER NAVIGATION ────────────────────────── */
-function goToChapter(index, direction) {
-  if (state.isTransitioning) return;
-  if (index < 0 || index >= state.totalChapters) return;
-
-  const chapters = document.querySelectorAll('.chapter');
-  const dots = document.querySelectorAll('.nav__dot');
-  const current = chapters[state.currentChapter];
-  const next = chapters[index];
-
-  state.isTransitioning = true;
-
-  const exitClass = direction === 'up' ? 'exit-up' : 'exit-down';
-  current.classList.add(exitClass);
-  current.classList.remove('active');
-
-  next.style.transform = direction === 'up' ? 'translateY(30px)' : 'translateY(-30px)';
-  next.style.opacity = '0';
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      next.classList.add('active');
-      next.style.transform = '';
-      next.style.opacity = '';
-    });
-  });
-
-  setTimeout(() => {
-    current.classList.remove(exitClass);
-    state.isTransitioning = false;
-  }, 520);
-
-  state.currentChapter = index;
-
-  dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-
-  const prevBtn = document.getElementById('prevChapter');
-  const nextBtn = document.getElementById('nextChapter');
-  if (prevBtn) prevBtn.disabled = index === 0;
-  if (nextBtn) nextBtn.disabled = index === state.totalChapters - 1;
-}
-
-function initChapterNav() {
-  document.getElementById('prevChapter')?.addEventListener('click', () => {
-    goToChapter(state.currentChapter - 1, 'down');
-  });
-  document.getElementById('nextChapter')?.addEventListener('click', () => {
-    goToChapter(state.currentChapter + 1, 'up');
-  });
-
-  document.querySelectorAll('.nav__dot').forEach((dot, i) => {
-    dot.addEventListener('click', () => {
-      const dir = i > state.currentChapter ? 'up' : 'down';
-      goToChapter(i, dir);
-    });
-  });
-
-  // Initial state
-  document.getElementById('prevChapter').disabled = true;
-}
-
-/* ── KEYBOARD NAV ──────────────────────────────── */
-function initKeyboardNav() {
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-      e.preventDefault();
-      goToChapter(state.currentChapter + 1, 'up');
-    } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-      e.preventDefault();
-      goToChapter(state.currentChapter - 1, 'down');
-    } else if (e.key === 'ArrowRight') {
-      if (state.currentChapter === 2) advanceCarousel(1);
-    } else if (e.key === 'ArrowLeft') {
-      if (state.currentChapter === 2) advanceCarousel(-1);
-    }
-  });
-}
-
-/* ── BEGIN BUTTON ──────────────────────────────── */
-function initBeginBtn() {
-  document.getElementById('beginBtn')?.addEventListener('click', () => {
-    goToChapter(1, 'up');
-  });
-}
-
-/* ── PHOTO UPLOAD ──────────────────────────────── */
+/* ── UPLOAD ── */
 function initUpload() {
-  const zone = document.getElementById('uploadZone');
-  const input = document.getElementById('photoInput');
-  const preview = document.getElementById('uploadPreview');
-  const previewImg = document.getElementById('previewImg');
-  const clearBtn = document.getElementById('uploadClear');
-  const inner = zone?.querySelector('.upload-zone__inner');
-
+  const zone = $("#uploadZone"), input = $("#photoInput");
+  const inner = $("#uploadInner"), preview = $("#uploadPreview"), img = $("#previewImg"), clear = $("#uploadClear");
   if (!zone) return;
 
-  zone.addEventListener('click', (e) => {
-    if (e.target !== clearBtn) input?.click();
-  });
-
-  zone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    zone.style.borderColor = 'var(--hud)';
-  });
-  zone.addEventListener('dragleave', () => {
-    zone.style.borderColor = '';
-  });
-  zone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    zone.style.borderColor = '';
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) handlePhoto(file);
-  });
-
-  input?.addEventListener('change', () => {
-    if (input.files[0]) handlePhoto(input.files[0]);
-  });
-
-  clearBtn?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    state.buildData.photo = null;
-    preview.hidden = true;
-    inner.style.display = '';
-    input.value = '';
-  });
-
-  function handlePhoto(file) {
-    state.buildData.photo = file;
-    const url = URL.createObjectURL(file);
-    previewImg.src = url;
-    preview.hidden = false;
-    inner.style.display = 'none';
-  }
-}
-
-/* ── TONE PICKER ───────────────────────────────── */
-function initTonePicker() {
-  const picker = document.getElementById('tonePicker');
-  if (!picker) return;
-  picker.querySelectorAll('.tone-swatch').forEach(btn => {
-    btn.addEventListener('click', () => {
-      picker.querySelectorAll('.tone-swatch').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.buildData.skinTone = btn.dataset.tone;
-    });
-  });
-}
-
-/* ── TOGGLE GROUPS ─────────────────────────────── */
-function initToggleGroups() {
-  [['genderGroup', 'gender'], ['fitGroup', 'fit']].forEach(([id, key]) => {
-    const group = document.getElementById(id);
-    if (!group) return;
-    group.querySelectorAll('.toggle-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.buildData[key] = btn.dataset.val;
-      });
-    });
-  });
-}
-
-/* ── ARCHETYPE ─────────────────────────────────── */
-function initArchetype() {
-  const grid = document.getElementById('archetypeGrid');
-  if (!grid) return;
-  grid.querySelectorAll('.archetype-card').forEach(card => {
-    card.addEventListener('click', () => {
-      grid.querySelectorAll('.archetype-card').forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-      state.buildData.archetype = card.dataset.archetype;
-    });
-  });
-}
-
-/* ── GENERATE BUILD ────────────────────────────── */
-function initGenerateBtn() {
-  const btn = document.getElementById('generateBtn');
-  if (!btn) return;
-
-  btn.addEventListener('click', () => {
-    const inner = btn.querySelector('.btn-primary__inner');
-    const loader = document.getElementById('btnLoader');
-    const arrow = btn.querySelector('.btn-primary__arrow');
-
-    inner.textContent = 'GENERATING';
-    loader?.classList.remove('hidden');
-    arrow?.classList.add('hidden');
-    btn.disabled = true;
-    btn.style.borderColor = 'var(--hud)';
-    btn.style.color = 'var(--hud)';
-
-    let dots = 0;
-    const dotInterval = setInterval(() => {
-      dots = (dots + 1) % 4;
-      inner.textContent = 'GENERATING' + '.'.repeat(dots);
-    }, 300);
-
-    setTimeout(() => {
-      clearInterval(dotInterval);
-      loader?.classList.add('hidden');
-      arrow?.classList.remove('hidden');
-      inner.textContent = 'BUILD READY';
-      btn.style.borderColor = '';
-      btn.style.color = '';
-      btn.disabled = false;
-
-      setTimeout(() => {
-        inner.textContent = 'GENERATE BUILD';
-        goToChapter(2, 'up');
-      }, 800);
-    }, 2400);
-  });
-}
-
-/* ── CAROUSEL ──────────────────────────────────── */
-function initCarousel() {
-  const track = document.getElementById('carouselTrack');
-  const slides = track?.querySelectorAll('.carousel-slide');
-  const indicatorsCont = document.getElementById('carouselIndicators');
-
-  if (!track || !slides) return;
-
-  // Build indicators
-  slides.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.classList.add('carousel-indicator');
-    if (i === state.carouselIndex) dot.classList.add('active');
-    indicatorsCont?.appendChild(dot);
-  });
-
-  function updateCarousel() {
-    const slideWidth = 280 + 24; // flex width + gap
-    const containerWidth = track.parentElement.offsetWidth;
-    const centerOffset = (containerWidth - 280) / 2 - (3 * slideWidth) + 16;
-    const offset = -(state.carouselIndex * slideWidth) + centerOffset;
-    track.style.transform = `translateX(${offset}px)`;
-
-    slides.forEach((slide, i) => {
-      slide.classList.toggle('center', i === state.carouselIndex);
-    });
-
-    const indicators = indicatorsCont?.querySelectorAll('.carousel-indicator');
-    indicators?.forEach((dot, i) => dot.classList.toggle('active', i === state.carouselIndex));
-  }
-
-  window.advanceCarousel = function(dir) {
-    state.carouselIndex = Math.max(0, Math.min(slides.length - 1, state.carouselIndex + dir));
-    updateCarousel();
+  const show = (file) => {
+    state.build.photo = file;
+    img.src = URL.createObjectURL(file);
+    preview.hidden = false; inner.hidden = true;
   };
 
-  document.getElementById('carouselPrev')?.addEventListener('click', () => advanceCarousel(-1));
-  document.getElementById('carouselNext')?.addEventListener('click', () => advanceCarousel(1));
-
-  // Touch/drag
-  let startX = 0;
-  track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
-  track.addEventListener('touchend', e => {
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 50) advanceCarousel(dx < 0 ? 1 : -1);
+  inner.addEventListener("click", () => input.click());
+  input.addEventListener("change", () => input.files[0] && show(input.files[0]));
+  ["dragover"].forEach((ev) => inner.addEventListener(ev, (e) => { e.preventDefault(); inner.style.borderColor = "var(--red)"; }));
+  inner.addEventListener("dragleave", () => { inner.style.borderColor = ""; });
+  inner.addEventListener("drop", (e) => {
+    e.preventDefault(); inner.style.borderColor = "";
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith("image/")) show(f);
   });
-
-  updateCarousel();
-  window.addEventListener('resize', updateCarousel);
-}
-
-/* ── SLOT PANELS ───────────────────────────────── */
-function initSlotPanels() {
-  document.querySelectorAll('.slot-panel').forEach(panel => {
-    const slot = panel.dataset.slot;
-    const alts = panel.querySelectorAll('.alt-btn');
-    const currentName = panel.querySelector('.slot-current-name');
-    const currentPrice = panel.querySelector('.slot-current-price');
-
-    alts.forEach(btn => {
-      btn.addEventListener('click', () => {
-        alts.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        if (slot && state.prices[slot] !== undefined) {
-          const price = parseInt(btn.dataset.price, 10);
-          state.prices[slot] = price;
-
-          const fullText = btn.textContent.trim();
-          const parts = fullText.split(' · ');
-          if (currentName) currentName.textContent = parts[0] || fullText;
-          if (currentPrice) currentPrice.textContent = `$${price}`;
-
-          updateTotalPrice();
-        }
-      });
-    });
+  clear.addEventListener("click", (e) => {
+    e.stopPropagation();
+    state.build.photo = null; input.value = "";
+    preview.hidden = true; inner.hidden = false;
   });
 }
 
-function updateTotalPrice() {
-  const total = Object.values(state.prices).reduce((a, b) => a + b, 0);
-  const el = document.getElementById('totalPrice');
-  if (el) el.textContent = `$${total.toLocaleString()}`;
-}
+/* ── PREPARE INPUTS ── */
+function initPrepare() {
+  $$("#tonePicker .tone").forEach((b) => b.addEventListener("click", () => {
+    $$("#tonePicker .tone").forEach((x) => x.classList.remove("active"));
+    b.classList.add("active"); state.build.skinTone = b.dataset.tone;
+  }));
 
-/* ── LOCK BUILD BTN ────────────────────────────── */
-function initLockBuild() {
-  document.getElementById('lockBuildBtn')?.addEventListener('click', () => {
-    goToChapter(4, 'up');
+  [["#genderGroup", "gender"], ["#fitGroup", "fit"]].forEach(([sel, key]) => {
+    $$(`${sel} .seg__btn`).forEach((b) => b.addEventListener("click", () => {
+      $$(`${sel} .seg__btn`).forEach((x) => x.classList.remove("active"));
+      b.classList.add("active"); state.build[key] = b.dataset.val;
+    }));
   });
 
-  document.getElementById('resetBuild')?.addEventListener('click', () => {
-    document.querySelectorAll('.slot-panel .alt-btn').forEach((btn, i) => {
-      const panel = btn.closest('.slot-panel');
-      const alts = panel.querySelectorAll('.alt-btn');
-      alts.forEach((b, j) => b.classList.toggle('active', j === 0));
-    });
+  $$("#archetypeGrid .arch").forEach((c) => c.addEventListener("click", () => {
+    $$("#archetypeGrid .arch").forEach((x) => x.classList.remove("active"));
+    c.classList.add("active"); state.build.archetype = c.dataset.archetype;
+  }));
+
+  $("#heightInput")?.addEventListener("input", (e) => state.build.height = +e.target.value || null);
+  $("#weightInput")?.addEventListener("input", (e) => state.build.weight = +e.target.value || null);
+
+  const btn = $("#generateBtn");
+  btn?.addEventListener("click", () => {
+    const txt = $(".btn__txt", btn), loader = $(".btn__loader", btn);
+    txt.textContent = "GENERATING"; loader.classList.remove("hidden"); btn.disabled = true;
+    setTimeout(() => {
+      txt.textContent = "BUILD READY"; loader.classList.add("hidden");
+      // bias selected build by archetype
+      const idx = BUILDS.findIndex((b) => b.tag.startsWith(state.build.archetype));
+      state.selected = idx >= 0 ? idx : 0;
+      setTimeout(() => {
+        txt.textContent = "GENERATE BUILD"; btn.disabled = false;
+        switchPanel(2, "fwd");
+      }, 650);
+    }, 2200);
+  });
+}
+
+/* ── PANEL 03 · CHARACTER SELECT ── */
+function buildSelectRow() {
+  const row = $("#selectRow");
+  if (!row) return;
+  row.innerHTML = BUILDS.map((b, i) => `
+    <div class="select-card${i === state.selected ? " active" : ""}" data-index="${i}">
+      <span class="select-card__num">0${i + 1}</span>
+      <div class="select-card__fig">
+        <div class="fig-slot"><img class="fig-img" src="" alt="${b.name}" /><div class="fig-placeholder"></div></div>
+      </div>
+      <div class="select-card__meta">
+        <span class="select-card__tag">${b.tag}</span>
+        <div class="select-card__name">${b.name}</div>
+        <div class="select-card__price">$${b.price.toLocaleString()}</div>
+      </div>
+    </div>`).join("");
+
+  $$(".select-card", row).forEach((card) => card.addEventListener("click", () => {
+    state.selected = +card.dataset.index;
+    $$(".select-card", row).forEach((c) => c.classList.toggle("active", c === card));
+    renderSelectDetail(state.selected);
+  }));
+}
+
+function renderSelectDetail(i) {
+  const b = BUILDS[i];
+  if (!b) return;
+  $("#detailTag").textContent = b.tag;
+  $("#detailName").textContent = b.name;
+  $("#detailPrice").textContent = `$${b.price.toLocaleString()}`;
+  $("#detailRows").innerHTML = b.pieces.map(([k, v]) =>
+    `<div class="detail-line"><span>${k}</span><span>${v}</span></div>`).join("");
+  // sync social card tag/price
+  const scTag = $("#scTag"), scPrice = $("#scPrice");
+  if (scTag) scTag.textContent = b.tag;
+  if (scPrice) scPrice.textContent = `$${b.price.toLocaleString()}`;
+}
+
+/* ── PANEL 04 · EQUIP ── */
+function initEquip() {
+  $$(".slot").forEach((slot) => {
+    const key = slot.dataset.slot;
+    const cur = $("[data-cur]", slot);
+    const piece = $(`.fl-piece[data-slot="${key}"]`);
+    $$(".alt", slot).forEach((alt) => alt.addEventListener("click", () => {
+      $$(".alt", slot).forEach((a) => a.classList.remove("active"));
+      alt.classList.add("active");
+      const price = +alt.dataset.price;
+      state.prices[key] = price;
+      cur.textContent = `${alt.dataset.name} · $${price}`;
+      if (piece) { piece.classList.add("flash"); setTimeout(() => piece.classList.remove("flash"), 400); }
+      updateTotal();
+    }));
+  });
+
+  $("#resetBuild")?.addEventListener("click", () => {
     state.prices = { jacket: 580, pants: 320, shoes: 240, bag: 100 };
-    updateTotalPrice();
-  });
-}
-
-/* ── DEPLOY ────────────────────────────────────── */
-function initDeploy() {
-  const deployBtn = document.getElementById('deployBtn');
-  const overlay = document.getElementById('deployOverlay');
-  const closeBtn = document.getElementById('closeOverlay');
-  const confirmedCode = document.getElementById('confirmedCode');
-
-  deployBtn?.addEventListener('click', () => {
-    if (confirmedCode) confirmedCode.textContent = state.dropCode;
-    overlay?.classList.remove('hidden');
-  });
-
-  closeBtn?.addEventListener('click', () => {
-    overlay?.classList.add('hidden');
-    goToChapter(0, 'down');
-  });
-}
-
-/* ── SOCIAL PACK ───────────────────────────────── */
-function initSocialPack() {
-  document.getElementById('downloadCard')?.addEventListener('click', () => {
-    const el = document.getElementById('socialCard');
-    if (!el) return;
-    // Simple snapshot approach with visual feedback
-    el.style.transform = 'scale(0.97)';
-    setTimeout(() => { el.style.transform = ''; }, 150);
-    alert('Card download ready — integrate html2canvas for real export.');
-  });
-
-  document.getElementById('shareCard')?.addEventListener('click', () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'My PRIMAL Build',
-        text: `Check my custom streetwear build — ${state.dropCode}`,
-        url: window.location.href,
-      }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(`PRIMAL BUILD ${state.dropCode} — ${window.location.href}`)
-        .then(() => alert('Build link copied to clipboard.'))
-        .catch(() => {});
-    }
-  });
-}
-
-/* ── INPUT SYNC ────────────────────────────────── */
-function initInputSync() {
-  document.getElementById('heightInput')?.addEventListener('input', e => {
-    state.buildData.height = parseInt(e.target.value, 10) || null;
-  });
-  document.getElementById('weightInput')?.addEventListener('input', e => {
-    state.buildData.weight = parseInt(e.target.value, 10) || null;
-  });
-}
-
-/* ── SCROLL-WITHIN-CHAPTER → NAV ───────────────── */
-function initScrollNav() {
-  let scrollTimeout;
-  document.querySelectorAll('.chapter').forEach(chapter => {
-    chapter.addEventListener('wheel', (e) => {
-      clearTimeout(scrollTimeout);
-      const atBottom = chapter.scrollHeight - chapter.scrollTop <= chapter.clientHeight + 2;
-      const atTop = chapter.scrollTop <= 2;
-
-      if (e.deltaY > 0 && atBottom) {
-        scrollTimeout = setTimeout(() => goToChapter(state.currentChapter + 1, 'up'), 120);
-      } else if (e.deltaY < 0 && atTop) {
-        scrollTimeout = setTimeout(() => goToChapter(state.currentChapter - 1, 'down'), 120);
-      }
-    }, { passive: true });
-  });
-}
-
-/* ── STAGGER ENTRANCE ANIMATIONS ──────────────── */
-function observeChapters() {
-  const fadeEls = document.querySelectorAll(
-    '.archetype-card, .catalog-card, .slot-panel, .drop-module, .order-line'
-  );
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        entry.target.style.animation = `fadeRise 0.5s ${i * 0.06}s both`;
-        observer.unobserve(entry.target);
-      }
+    $$(".slot").forEach((slot) => {
+      const alts = $$(".alt", slot);
+      alts.forEach((a, j) => a.classList.toggle("active", j === 0));
+      const first = alts[0];
+      $("[data-cur]", slot).textContent = `${first.dataset.name} · $${first.dataset.price}`;
     });
-  }, { threshold: 0.1 });
-  fadeEls.forEach(el => observer.observe(el));
+    updateTotal();
+  });
 }
 
-/* ── INIT ──────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
-  initClock();
-  initDropCode();
-  initGeo();
-  initCountdown();
-  initChapterNav();
-  initKeyboardNav();
-  initBeginBtn();
+function updateTotal() {
+  const t = Object.values(state.prices).reduce((a, b) => a + b, 0);
+  ["#totalPrice", "#scPrice"].forEach((s) => { const e = $(s); if (e) e.textContent = `$${t.toLocaleString()}`; });
+}
+
+/* ── PANEL 05 · DEPLOY ── */
+function renderOrder() {
+  const lines = $("#orderLines");
+  if (!lines) return;
+  const items = $$(".slot").map((slot) => {
+    const active = $(".alt.active", slot);
+    return [active.dataset.name, +active.dataset.price];
+  });
+  const total = items.reduce((a, [, p]) => a + p, 0);
+  lines.innerHTML =
+    items.map(([n, p]) => `<div class="order-line"><span>${n}</span><span>$${p}</span></div>`).join("") +
+    `<div class="order-line order-line--total"><span>BUILD TOTAL</span><span class="red">$${total.toLocaleString()}</span></div>`;
+}
+
+function initDeploy() {
+  $("#deployBtn")?.addEventListener("click", () => {
+    $("#confirmedCode").textContent = state.dropCode;
+    $("#deployOverlay").classList.remove("hidden");
+  });
+  $("#closeOverlay")?.addEventListener("click", () => {
+    $("#deployOverlay").classList.add("hidden");
+    switchPanel(0, "back");
+  });
+  $("#downloadCard")?.addEventListener("click", () => {
+    const c = $("#socialCard");
+    c.style.transform = "scale(0.97)"; setTimeout(() => c.style.transform = "", 150);
+    alert("Card snapshot ready — wire html2canvas for true PNG export.");
+  });
+  $("#shareCard")?.addEventListener("click", () => {
+    const payload = `PRIMAL BUILD ${state.dropCode}`;
+    if (navigator.share) navigator.share({ title: "My PRIMAL Build", text: payload, url: location.href }).catch(() => {});
+    else navigator.clipboard?.writeText(`${payload} — ${location.href}`).then(() => alert("Build link copied.")).catch(() => {});
+  });
+}
+
+/* ── INIT ── */
+document.addEventListener("DOMContentLoaded", () => {
+  initChromeData();
+  initNav();
   initUpload();
-  initTonePicker();
-  initToggleGroups();
-  initArchetype();
-  initGenerateBtn();
-  initCarousel();
-  initSlotPanels();
-  initLockBuild();
+  initPrepare();
+  buildSelectRow();
+  renderSelectDetail(state.selected);
+  initEquip();
   initDeploy();
-  initSocialPack();
-  initInputSync();
-  initScrollNav();
-  observeChapters();
 });

@@ -17,6 +17,7 @@ export default [
         URL: "readonly",
         IntersectionObserver: "readonly",
         console: "readonly",
+        location: "readonly",
         advanceCarousel: "writable",
       }
     },

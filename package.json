@@ -1,0 +1,21 @@
+{
+  "name": "primallifestyle",
+  "version": "0.1.0",
+  "description": "PRIMAL — hyper-personalized fashion drop engine",
+  "private": true,
+  "scripts": {
+    "dev": "npx http-server . -p 3000 -c-1 --cors -o index.html",
+    "serve": "npx http-server . -p 3000 -c-1 --cors",
+    "lint:html": "npx htmlhint index.html",
+    "lint:css": "npx stylelint 'css/**/*.css'",
+    "lint:js": "npx eslint 'js/**/*.js'",
+    "lint": "npm run lint:html && npm run lint:css && npm run lint:js"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "htmlhint": "^1.1.4",
+    "http-server": "^14.1.1",
+    "stylelint": "^16.0.0",
+    "stylelint-config-standard": "^36.0.0"
+  }
+}

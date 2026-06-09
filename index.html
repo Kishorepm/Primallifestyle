@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRIMAL — Built On Your Body</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- ═══════════════ FIXED HUD CHROME ═══════════════ -->
+  <div class="chrome">
+    <!-- background textures -->
+    <div class="chrome__grid"></div>
+    <div class="chrome__scan"></div>
+    <div class="chrome__vignette"></div>
+
+    <!-- corner brackets -->
+    <span class="bracket bracket--tl"></span>
+    <span class="bracket bracket--tr"></span>
+    <span class="bracket bracket--bl"></span>
+    <span class="bracket bracket--br"></span>
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="topbar__logo">
+        <span class="logo-mark">PRIMAL</span>
+        <span class="logo-sub">.OS</span>
+      </div>
+
+      <nav class="tabrail" id="tabrail">
+        <button class="tab active" data-panel="0"><span class="tab__num">01</span><span class="tab__name">TITLE</span></button>
+        <button class="tab" data-panel="1"><span class="tab__num">02</span><span class="tab__name">PREPARE</span></button>
+        <button class="tab" data-panel="2"><span class="tab__num">03</span><span class="tab__name">DROP</span></button>
+        <button class="tab" data-panel="3"><span class="tab__num">04</span><span class="tab__name">EQUIP</span></button>
+        <button class="tab" data-panel="4"><span class="tab__num">05</span><span class="tab__name">DEPLOY</span></button>
+      </nav>
+
+      <div class="topbar__status">
+        <span class="status-pill"><span class="status-pill__dot"></span>DROP.01 LIVE</span>
+      </div>
+    </header>
+
+    <!-- LEFT RAIL -->
+    <aside class="rail rail--left">
+      <div class="telem"><span>SYS</span><span class="telem__lead"></span><span>PRIMAL.OS</span></div>
+      <div class="telem"><span>VER</span><span class="telem__lead"></span><span>01.0.0</span></div>
+      <div class="telem"><span>SEASON</span><span class="telem__lead"></span><span>001</span></div>
+      <div class="telem"><span>UNITS</span><span class="telem__lead"></span><span class="red">47</span></div>
+    </aside>
+
+    <!-- RIGHT RAIL -->
+    <aside class="rail rail--right">
+      <div class="telem"><span>NODE</span><span class="telem__lead"></span><span id="r-panel">01/05</span></div>
+      <div class="telem"><span>EDITION</span><span class="telem__lead"></span><span class="red">1 OF 1</span></div>
+      <div class="telem"><span>GEO</span><span class="telem__lead"></span><span id="r-geo">·····</span></div>
+      <div class="telem"><span>UTC</span><span class="telem__lead"></span><span id="r-time">00:00:00</span></div>
+    </aside>
+
+    <!-- BOTTOM BAR -->
+    <footer class="botbar">
+      <div class="botbar__code">
+        <span class="botbar__label">DROP CODE</span>
+        <span class="botbar__val" id="dropCode">PRM-····-····-····</span>
+      </div>
+      <div class="botbar__progress">
+        <span class="prog-seg active"></span>
+        <span class="prog-seg"></span>
+        <span class="prog-seg"></span>
+        <span class="prog-seg"></span>
+        <span class="prog-seg"></span>
+      </div>
+      <div class="botbar__hint" id="botHint">USE TABS OR ◄ ► TO NAVIGATE</div>
+    </footer>
+  </div>
+
+  <!-- ═══════════════ STAGE (panels swap here) ═══════════════ -->
+  <main class="stage" id="stage">
+
+    <!-- ───────── PANEL 01 · TITLE ───────── -->
+    <section class="panel active" id="p0" data-panel="0">
+      <div class="title-layout">
+
+        <div class="title-copy">
+          <p class="eyebrow">HYPER-PERSONALIZED DROP ENGINE</p>
+          <h1 class="wordmark glitch" data-text="PRIMAL">PRIMAL</h1>
+          <p class="tagline">BUILT ON YOUR BODY</p>
+          <p class="lede">Algorithm-curated streetwear loadouts. Geo-locked. One-of-one. Tuned to your body, your code, your drop.</p>
+          <button class="btn btn--primary" data-goto="1">
+            <span>GENERATE MY BUILD</span><span class="btn__arrow">→</span>
+          </button>
+          <div class="ticket">
+            <div class="ticket__row">
+              <span class="ticket__label">ACCESS TICKET</span>
+              <span class="ticket__code" id="ticketCode">PRM-····-····</span>
+            </div>
+            <div class="ticket__barcode"></div>
+            <div class="ticket__row ticket__row--end">
+              <span>GEO-LOCKED</span><span class="red">STANDBY</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="title-hero">
+          <span class="float-obj float-obj--1"></span>
+          <span class="float-obj float-obj--2"></span>
+          <span class="float-obj float-obj--3"></span>
+          <div class="fig-slot fig-slot--hero floaty">
+            <img class="fig-img" src="" alt="Featured build" />
+            <div class="fig-placeholder fig-placeholder--full"></div>
+            <span class="fig-bracket fig-bracket--tl"></span>
+            <span class="fig-bracket fig-bracket--br"></span>
+          </div>
+          <div class="hero-badge">
+            <span>1 OF 1</span><span>IN YOUR CODE</span>
+          </div>
+          <div class="hero-floor"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ───────── PANEL 02 · PREPARE ───────── -->
+    <section class="panel" id="p1" data-panel="1">
+      <div class="panel-head">
+        <span class="panel-head__num">02</span>
+        <h2 class="panel-head__title">PREPARE<span class="red">/</span>DOCTRINE</h2>
+        <p class="panel-head__desc">Feed the algorithm. It reads you, builds you.</p>
+      </div>
+
+      <div class="prepare-grid">
+
+        <div class="hud-box upload" id="uploadZone">
+          <div class="hud-box__label">REFERENCE / PHOTO</div>
+          <div class="upload__inner" id="uploadInner">
+            <div class="upload__icon"></div>
+            <p class="upload__txt">DROP OR SELECT IMAGE</p>
+            <p class="upload__sub">JPG · PNG · MAX 8MB</p>
+          </div>
+          <div class="upload__preview" id="uploadPreview" hidden>
+            <img id="previewImg" alt="Your reference" />
+            <button class="upload__clear" id="uploadClear" type="button">✕</button>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" hidden />
+        </div>
+
+        <div class="hud-box specs">
+          <div class="hud-box__label">BODY / SPEC</div>
+          <div class="spec-rows">
+            <div class="spec-row">
+              <label>SKIN TONE</label>
+              <div class="tones" id="tonePicker">
+                <button class="tone" data-tone="I" style="--c:#F5D5B0"></button>
+                <button class="tone" data-tone="II" style="--c:#D4A574"></button>
+                <button class="tone" data-tone="III" style="--c:#B8834A"></button>
+                <button class="tone" data-tone="IV" style="--c:#8B5E3C"></button>
+                <button class="tone" data-tone="V" style="--c:#5C3420"></button>
+                <button class="tone" data-tone="VI" style="--c:#2D1B0E"></button>
+              </div>
+            </div>
+            <div class="spec-row">
+              <label for="heightInput">HEIGHT</label>
+              <div class="num-input"><input id="heightInput" type="number" placeholder="175" /><span>CM</span></div>
+            </div>
+            <div class="spec-row">
+              <label for="weightInput">WEIGHT</label>
+              <div class="num-input"><input id="weightInput" type="number" placeholder="70" /><span>KG</span></div>
+            </div>
+            <div class="spec-row">
+              <label>GENDER STYLE</label>
+              <div class="seg" id="genderGroup">
+                <button class="seg__btn active" data-val="male">M</button>
+                <button class="seg__btn" data-val="female">F</button>
+                <button class="seg__btn" data-val="neutral">N</button>
+              </div>
+            </div>
+            <div class="spec-row">
+              <label>FIT</label>
+              <div class="seg" id="fitGroup">
+                <button class="seg__btn active" data-val="slim">SLIM</button>
+                <button class="seg__btn" data-val="regular">REG</button>
+                <button class="seg__btn" data-val="oversized">OS</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hud-box archetypes">
+          <div class="hud-box__label">ARCHETYPE / SELECT</div>
+          <div class="arch-grid" id="archetypeGrid">
+            <button class="arch" data-archetype="URBAN">
+              <span class="arch__glyph">⬡</span>
+              <span class="arch__name">URBAN</span>
+              <span class="arch__desc">City-engineered. Utility meets edge.</span>
+            </button>
+            <button class="arch active" data-archetype="SHADOW">
+              <span class="arch__glyph">◈</span>
+              <span class="arch__name">SHADOW</span>
+              <span class="arch__desc">Minimal. Stealth. Technical fabric.</span>
+            </button>
+            <button class="arch" data-archetype="FIELD">
+              <span class="arch__glyph">⬟</span>
+              <span class="arch__name">FIELD</span>
+              <span class="arch__desc">Tactical outerwear. Weather-ready.</span>
+            </button>
+          </div>
+          <button class="btn btn--primary btn--block" id="generateBtn">
+            <span class="btn__txt">GENERATE BUILD</span>
+            <span class="btn__loader hidden"><i></i><i></i><i></i></span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ───────── PANEL 03 · DROP ───────── -->
+    <section class="panel" id="p2" data-panel="2">
+      <div class="panel-head">
+        <span class="panel-head__num">03</span>
+        <h2 class="panel-head__title">DROP<span class="red">.</span>01</h2>
+        <p class="panel-head__desc">Your generated builds. Select one to inspect.</p>
+      </div>
+
+      <div class="select-layout">
+        <div class="select-row" id="selectRow"></div>
+
+        <div class="select-detail" id="selectDetail">
+          <div class="detail-spec">
+            <div class="detail-spec__tag" id="detailTag">SHADOW / BUILD 01</div>
+            <h3 class="detail-spec__name" id="detailName">ACRONYM LOADOUT</h3>
+            <div class="detail-spec__rows" id="detailRows"></div>
+            <div class="detail-spec__total">
+              <span>BUILD TOTAL</span>
+              <span class="detail-spec__price red" id="detailPrice">$1,240</span>
+            </div>
+            <button class="btn btn--primary btn--block" data-goto="3">
+              <span>EQUIP THIS BUILD</span><span class="btn__arrow">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── PANEL 04 · EQUIP ───────── -->
+    <section class="panel" id="p3" data-panel="3">
+      <div class="panel-head">
+        <span class="panel-head__num">04</span>
+        <h2 class="panel-head__title">EQUIP</h2>
+        <p class="panel-head__desc">Lock your loadout. Swap pieces from curated alternatives.</p>
+      </div>
+
+      <div class="equip-grid">
+        <div class="hud-box flatlay-box">
+          <div class="hud-box__label">ACTIVE / LOADOUT</div>
+          <div class="flatlay" id="flatlay">
+            <div class="fl-slot fl-slot--cap"><div class="fl-piece" data-slot="cap"></div><span>CAP</span></div>
+            <div class="fl-slot fl-slot--jacket"><div class="fl-piece" data-slot="jacket"></div><span>OUTER</span></div>
+            <div class="fl-slot fl-slot--bag"><div class="fl-piece" data-slot="bag"></div><span>CARRY</span></div>
+            <div class="fl-slot fl-slot--pants"><div class="fl-piece" data-slot="pants"></div><span>BOTTOM</span></div>
+            <div class="fl-slot fl-slot--shoes"><div class="fl-piece" data-slot="shoes"></div><span>FEET</span></div>
+          </div>
+          <div class="flatlay__total">
+            <span>BUILD TOTAL</span><span class="red" id="totalPrice">$1,240</span>
+          </div>
+        </div>
+
+        <div class="slots" id="slots">
+          <div class="slot" data-slot="jacket">
+            <div class="slot__head"><span>OUTERWEAR</span><span class="slot__cur" data-cur>ACRONYM J1A-GT · $580</span></div>
+            <div class="slot__alts">
+              <button class="alt active" data-name="ACRONYM J1A-GT" data-price="580">ACRONYM J1A-GT · $580</button>
+              <button class="alt" data-name="CP COMPANY GOGGLE" data-price="420">CP COMPANY · $420</button>
+              <button class="alt" data-name="VEILANCE MIONN" data-price="650">VEILANCE MIONN · $650</button>
+            </div>
+          </div>
+          <div class="slot" data-slot="pants">
+            <div class="slot__head"><span>BOTTOM</span><span class="slot__cur" data-cur>STONE ISLAND CARGO · $320</span></div>
+            <div class="slot__alts">
+              <button class="alt active" data-name="STONE ISLAND CARGO" data-price="320">STONE ISLAND · $320</button>
+              <button class="alt" data-name="NEMEN HYBRID" data-price="280">NEMEN HYBRID · $280</button>
+              <button class="alt" data-name="ISAORA ALPINE" data-price="360">ISAORA ALPINE · $360</button>
+            </div>
+          </div>
+          <div class="slot" data-slot="shoes">
+            <div class="slot__head"><span>FOOTWEAR</span><span class="slot__cur" data-cur>SALEHE 2002R · $240</span></div>
+            <div class="slot__alts">
+              <button class="alt active" data-name="SALEHE 2002R" data-price="240">SALEHE 2002R · $240</button>
+              <button class="alt" data-name="NB 990V6" data-price="190">NB 990V6 · $190</button>
+              <button class="alt" data-name="NORDA 001" data-price="310">NORDA 001 · $310</button>
+            </div>
+          </div>
+          <div class="slot" data-slot="bag">
+            <div class="slot__head"><span>CARRY</span><span class="slot__cur" data-cur>PORTER TANKER · $100</span></div>
+            <div class="slot__alts">
+              <button class="alt active" data-name="PORTER TANKER" data-price="100">PORTER TANKER · $100</button>
+              <button class="alt" data-name="COTE&CIEL ISAR" data-price="85">COTE&CIEL · $85</button>
+              <button class="alt" data-name="OUTLIER PACK" data-price="140">OUTLIER · $140</button>
+            </div>
+          </div>
+          <div class="equip-actions">
+            <button class="btn btn--ghost" id="resetBuild">RESET</button>
+            <button class="btn btn--primary" data-goto="4"><span>LOCK BUILD</span><span class="btn__arrow">→</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── PANEL 05 · DEPLOY ───────── -->
+    <section class="panel" id="p4" data-panel="4">
+      <div class="panel-head">
+        <span class="panel-head__num">05</span>
+        <h2 class="panel-head__title">DEPLOY</h2>
+        <p class="panel-head__desc">Your build is confirmed. Ship it.</p>
+      </div>
+
+      <div class="deploy-grid">
+        <div class="hud-box">
+          <div class="hud-box__label">ORDER / SUMMARY</div>
+          <div class="order-lines" id="orderLines"></div>
+        </div>
+
+        <div class="hud-box deploy-status">
+          <div class="hud-box__label">DROP / STATUS</div>
+          <div class="dmods">
+            <div class="dmod dmod--live"><span class="dmod__ico">◉</span><span class="dmod__l">STATUS</span><span class="dmod__v red">DROP OPEN</span></div>
+            <div class="dmod"><span class="dmod__ico">◈</span><span class="dmod__l">EDITION</span><span class="dmod__v">1 OF 1</span></div>
+            <div class="dmod"><span class="dmod__ico">⊕</span><span class="dmod__l">GEO-LOCK</span><span class="dmod__v" id="geoStatus">DETECTING…</span></div>
+            <div class="dmod"><span class="dmod__ico">⧖</span><span class="dmod__l">WINDOW</span><span class="dmod__v countdown" id="dropCountdown">23:47:12</span></div>
+          </div>
+          <button class="btn btn--deploy btn--block" id="deployBtn">CONFIRM &amp; DEPLOY</button>
+        </div>
+
+        <div class="hud-box social">
+          <div class="hud-box__label">CONTENT / PACK</div>
+          <div class="social-card" id="socialCard">
+            <div class="sc-top"><span class="sc-logo">PRIMAL</span><span class="sc-tag" id="scTag">SHADOW BUILD 01</span></div>
+            <div class="sc-fig"><div class="fig-slot"><img class="fig-img" src="" alt="" /><div class="fig-placeholder"></div></div></div>
+            <div class="sc-foot">
+              <span class="sc-price red" id="scPrice">$1,240</span>
+              <span class="sc-code" id="socialCode">PRM-····-····</span>
+            </div>
+          </div>
+          <div class="social-actions">
+            <button class="btn btn--ghost" id="downloadCard">DOWNLOAD</button>
+            <button class="btn btn--ghost" id="shareCard">SHARE</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- STAGE NAV ARROWS -->
+  <button class="stage-nav stage-nav--prev" id="navPrev" aria-label="Previous">‹</button>
+  <button class="stage-nav stage-nav--next" id="navNext" aria-label="Next">›</button>
+
+  <!-- DEPLOY OVERLAY -->
+  <div class="overlay hidden" id="deployOverlay">
+    <div class="overlay__inner">
+      <div class="overlay__ico">◉</div>
+      <h2 class="overlay__title">BUILD DEPLOYED</h2>
+      <p class="overlay__code" id="confirmedCode">PRM-····-····</p>
+      <p class="overlay__sub">Order confirmed. Dispatch within 48h.</p>
+      <button class="btn btn--primary" id="closeOverlay"><span>RETURN TO PRIMAL</span></button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
